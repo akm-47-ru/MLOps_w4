@@ -1,0 +1,20 @@
+data:
+  raw_data_path: "data/raw/iris.csv"
+  processed_data_path: "data/processed/"
+  test_size: 0.2
+  random_state: 42
+
+model:
+  type: "RandomForestClassifier"
+  n_estimators: 100
+  random_state: 42
+  max_depth: 10
+
+training:
+  cv_folds: 5
+  scoring: "accuracy"
+
+output:
+  model_path: "models/"
+  metrics_path: "models/metrics.json"
+  plots_path: "models/plots/"
