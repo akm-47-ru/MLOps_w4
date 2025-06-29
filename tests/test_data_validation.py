@@ -51,10 +51,14 @@ class TestDataValidation:
         with pytest.raises(ValueError, match="Target values are not as expected"):
             data_loader.validate_data(sample_valid_data)
     
+    # corrected shape validation
     def test_data_validation_wrong_shape(self, data_loader):
         """Test data validation with wrong data shape"""
         wrong_data = pd.DataFrame({
-            'col1': [1, 2, 3],
+            'sepal length (cm)': [1, 2, 3],
+            'sepal width (cm)': [0.1, 0.2, 0.3],
+            'petal length (cm)': [1.1, 1.2, 1.3],
+            'petal width (cm)': [0.1, 0.2, 0.3],
             'target': [0, 1, 2]
         })
         with pytest.raises(ValueError, match="Dataset shape is not as expected"):
