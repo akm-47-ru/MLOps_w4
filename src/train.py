@@ -6,10 +6,15 @@ from sklearn.metrics import classification_report, confusion_matrix
 import joblib
 import json
 import yaml
+import sys
 import os
 import logging
-from data_loader import DataLoader
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.data_loader import DataLoader
+
+# This is the function for training the model
 class ModelTrainer:
     def __init__(self, config_path="config/config.yaml"):
         with open(config_path, 'r') as file:
