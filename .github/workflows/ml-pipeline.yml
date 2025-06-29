@@ -102,4 +102,4 @@ jobs:
         echo "- Test samples: 30" >> report.md
         
         # Publish report as comment
-        cml-send-comment report.md
+        cml comment create report.md
