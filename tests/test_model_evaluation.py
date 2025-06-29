@@ -70,7 +70,8 @@ class TestModelEvaluation:
         X_test_scaled = scaler.fit_transform(X_test)
         
         # Create and save model
-        model = RandomForestClassifier(n_estimators=10, random_state=42)
+        model = DecisionTreeClassifier(max_depth = 3, random_state = 42)
+        # model = RandomForestClassifier(n_estimators=10, random_state=42)
         model.fit(X_train, y_train)
         
         # Save model and data
