@@ -10,6 +10,7 @@ import os
 import logging
 from data_loader import DataLoader
 
+# Training module
 class ModelTrainer:
     def __init__(self, config_path="config/config.yaml"):
         with open(config_path, 'r') as file:
