@@ -88,13 +88,6 @@ jobs:
             print("Metrics file not found!")
         EOF
         
-        # Add confusion matrix if it exists
-        if [ -f "models/plots/confusion_matrix.png" ]; then
-          echo "## Confusion Matrix" >> report.md
-          echo "![Confusion Matrix](models/plots/confusion_matrix.png)" >> report.md
-          cml-publish models/plots/confusion_matrix.png --md >> report.md
-        fi
-        
         # Add data validation summary
         echo "## Data Validation Status" >> report.md
         echo "✅ Data validation tests passed" >> report.md
