@@ -14,7 +14,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.data_loader import DataLoader
 
-# Training module
+# This is the function for training the model
 class ModelTrainer:
     def __init__(self, config_path="config/config.yaml"):
         with open(config_path, 'r') as file:
