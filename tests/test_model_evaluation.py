@@ -14,6 +14,9 @@ from sklearn.preprocessing import StandardScaler
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from src.evaluate import ModelEvaluator
+from src.train import ModelTrainer
+
 class TestModelEvaluation:
     
     @pytest.fixture

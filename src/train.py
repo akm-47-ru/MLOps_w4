@@ -8,7 +8,10 @@ import json
 import yaml
 import os
 import logging
-from data_loader import DataLoader
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.data_loader import DataLoader
 
 # Training module
 class ModelTrainer:
