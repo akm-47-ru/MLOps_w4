@@ -8,7 +8,7 @@ import json
 import yaml
 import os
 import logging
-from data_loader import DataLoader
+from src.data_loader import DataLoader
 
 # Training module
 class ModelTrainer:
