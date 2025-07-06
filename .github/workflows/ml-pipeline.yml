@@ -141,13 +141,3 @@ jobs:
         
         # Publish report as comment
         cml comment create report.md
-    
-    - name: Archive MLFlow artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: mlflow-artifacts
-        path: |
-          mlflow.db
-          mlruns/
-          models/best_params.yaml
-        retention-days: 30
