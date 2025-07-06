@@ -1,8 +1,6 @@
 name: ML Pipeline CI/CD
 
 on:
-  push:
-    branches: [ dev, main ]
   pull_request:
     branches: [ main ]
 
@@ -38,7 +36,11 @@ jobs:
       run: |
         pytest tests/test_model_evaluation.py -v --tb=short
     
-    - name: Train model
+    - name: Run hyperparameter tuning with MLFlow
+      run: |
+        python src/hyperparameter_tuning.py
+        
+    - name: Train baseline model (for comparison)
       run: |
         python src/train.py
     
@@ -54,12 +56,36 @@ jobs:
     - name: Install CML 
       run: npm install -g @dvcorg/cml
     
-    - name: Generate ML Report
+    - name: Generate ML Report with MLFlow Results
       env:
         REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         # Create ML report
         echo "# IRIS Model Performance Report" > report.md
+        echo "## Hyperparameter Tuning Results" >> report.md
+        
+        # Extract best parameters if available
+        python << 'EOF' >> report.md
+        import yaml
+        import os
+        import json
+        
+        # Check for best parameters from hyperparameter tuning
+        if os.path.exists('models/best_params.yaml'):
+            with open('models/best_params.yaml', 'r') as f:
+                best_params = yaml.safe_load(f)
+            
+            print(f"")
+            print(f"### Best Hyperparameters Found")
+            print(f"| Parameter | Value |")
+            print(f"|-----------|-------|")
+            for param, value in best_params.items():
+                print(f"| {param} | {value} |")
+            print(f"")
+        else:
+            print("No hyperparameter tuning results found.")
+        EOF
+        
         echo "## Model Metrics" >> report.md
         
         # Extract metrics from JSON file
@@ -93,14 +119,21 @@ jobs:
             print("Metrics file not found!")
         EOF
         
+        # Add MLFlow information
+        echo "## MLFlow Tracking" >> report.md
+        echo "- **Tracking URI**: sqlite:///mlflow.db" >> report.md
+        echo "- **Experiment**: iris_hyperparameter_tuning" >> report.md
+        echo "- **Hyperparameter Search Space**: RandomForestClassifier parameters" >> report.md
+        
         # Add data validation summary
         echo "## Data Validation Status" >> report.md
         echo "✅ Data validation tests passed" >> report.md
         echo "✅ Model evaluation tests passed" >> report.md
+        echo "✅ Hyperparameter tuning completed" >> report.md
         
         # Add model info
         echo "## Model Configuration" >> report.md
-        echo "- Algorithm: Random Forest Classifier" >> report.md
+        echo "- Algorithm: Random Forest Classifier (with hyperparameter tuning)" >> report.md
         echo "- Features: 4 (sepal length, sepal width, petal length, petal width)" >> report.md
         echo "- Classes: 3 (setosa, versicolor, virginica)" >> report.md
         echo "- Training samples: 120" >> report.md
