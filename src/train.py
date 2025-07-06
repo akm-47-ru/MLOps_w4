@@ -9,6 +9,9 @@ import yaml
 import sys
 import os
 import logging
+import mlflow
+import mlflow.sklearn
+import mlflow.models
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -22,14 +25,24 @@ class ModelTrainer:
         
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
-    
-    def train_model(self, X_train, y_train):
-        """Train the model"""
-        model = RandomForestClassifier(
-            n_estimators=self.config['model']['n_estimators'],
-            random_state=self.config['model']['random_state'],
-            max_depth=self.config['model']['max_depth']
-        )
+        
+        # Initialize MLFlow
+        mlflow.set_tracking_uri(self.config.get('mlflow', {}).get('tracking_uri', 'sqlite:///mlflow.db'))
+        mlflow.set_experiment(self.config.get('mlflow', {}).get('experiment_name', 'iris_model_training'))
+
+
+def train_model(self, X_train, y_train):
+    """Train the model with MLFlow tracking"""
+    with mlflow.start_run(run_name="baseline_training"):
+        # Log parameters
+        model_params = {
+            'n_estimators': self.config['model']['n_estimators'],
+            'random_state': self.config['model']['random_state'],
+            'max_depth': self.config['model']['max_depth']
+        }
+        mlflow.log_params(model_params)
+        
+        model = RandomForestClassifier(**model_params)
         
         # Perform cross-validation
         cv_scores = cross_val_score(
@@ -38,13 +51,27 @@ class ModelTrainer:
             scoring=self.config['training']['scoring']
         )
         
+        # Log cross-validation metrics
+        mlflow.log_metric("cv_mean_score", cv_scores.mean())
+        mlflow.log_metric("cv_std_score", cv_scores.std())
+        
         # Train final model
         model.fit(X_train, y_train)
+        
+        input_example = X_train[:5]  
+        signature = mlflow.models.infer_signature(X_train, model.predict(X_train))
+        
+        mlflow.sklearn.log_model(
+            sk_model=model,
+            artifact_path="model",  
+            input_example=input_example,
+            signature=signature
+        )
         
         self.logger.info(f"Model trained with CV accuracy: {cv_scores.mean():.4f} (+/- {cv_scores.std() * 2:.4f})")
         
         return model, cv_scores
-    
+
     def save_model(self, model, scaler):
         """Save the trained model and scaler"""
         model_dir = self.config['output']['model_path']

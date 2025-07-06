@@ -14,6 +14,19 @@ training:
   cv_folds: 5
   scoring: "accuracy"
 
+# MLFlow configuration
+mlflow:
+  tracking_uri: "./mlruns"
+  experiment_name: "iris_hyperparameter_tuning"
+  artifact_location: "./mlruns"
+
+# Hyperparameter tuning configuration
+hyperparameter_tuning:
+  enabled: true
+  param_grid:
+    n_estimators: [50, 200]
+    max_depth: [5, 20]
+
 output:
   model_path: "models/"
   metrics_path: "models/metrics.json"
